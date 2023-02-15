@@ -8,66 +8,117 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer = default;
     private Animator playerAnimation = default;
 
-    private float playerSpeed = 5.0f;
-    private float playerJumpForce = 15.0f;
+    private float playerSpeed = default;
+    private float playerJumpForce = default;
 
     private bool isGrounded = false;
-    private bool isJumping = false;
     private bool isRunning = false;
+    private bool isJumpping = false;
 
     private void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerAnimation = GetComponent<Animator>();
+
+        playerSpeed = 5.0f;
+        playerJumpForce = 15.0f;
     }
 
     private void Update()
+    {
+        KeyControll();
+        SpriteFlip();
+        GravityScale();
+
+        SetAnimatorParameters();
+
+
+
+
+    }   //  Update()
+
+    private void KeyControll()
     {
         float x = Input.GetAxisRaw("Horizontal");
 
         playerRigidbody.velocity = new Vector2(x * playerSpeed, playerRigidbody.velocity.y);
 
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
         {
-            isRunning = true;
-            spriteRenderer.flipX = true;
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            isRunning = true;
-            spriteRenderer.flipX = false;
+            playerRigidbody.AddForce(Vector2.up * playerJumpForce, ForceMode2D.Impulse);
         }
 
-        if (Input.GetKeyUp(KeyCode.RightArrow) || Input.GetKeyUp(KeyCode.LeftArrow))
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+
+        }
+    }   //  KeyControll()
+
+    private void SpriteFlip()
+    {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            spriteRenderer.flipX = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            spriteRenderer.flipX = false;
+        }
+    }   //  SpriteFlip()
+
+    private void GravityScale()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+        {
+            playerRigidbody.gravityScale = 3.0f;
+        }
+
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            playerRigidbody.gravityScale = 8.0f;
+        }
+    }   //  GravityScale()
+
+    private void SetAnimatorParameters()
+    {
+        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
+        {
+            isRunning = true;
+            playerAnimation.SetBool("Run", isRunning);
+        }
+        else
         {
             isRunning = false;
+            playerAnimation.SetBool("Run", isRunning);
         }
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
         {
-            playerRigidbody.gravityScale = 3.0f;
-            playerRigidbody.AddForce(Vector2.up * playerJumpForce, ForceMode2D.Impulse);
+            isJumpping = true;
+            playerAnimation.SetBool("Jump", isJumpping);
         }
+
         if (Input.GetKeyUp(KeyCode.Space))
         {
-
-            playerRigidbody.gravityScale = 8.0f;
+            isJumpping = false;
+            playerAnimation.SetBool("Jump", isJumpping);
         }
 
-            playerAnimation.SetBool("isJumping", isJumping);
-            playerAnimation.SetBool("isRunning", isRunning);
-    }   //  Update()
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            playerAnimation.SetTrigger("Slash");
+        }
+    }   //  SetAnimatorParameters()
 
     private void OnCollisionStay2D(Collision2D collision)
     {
         isGrounded = true;
-        isJumping = false;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         isGrounded = false;
-        isJumping = true;
     }
 }
