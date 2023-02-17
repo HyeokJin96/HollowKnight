@@ -162,12 +162,12 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionStay2D(Collision2D collision)
     {
         GData.isGrounded = true;
-    }
+    }   //  OnCollisionStay2D()
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         GData.isGrounded = false;
-    }
+    }   //  OnCollisionExit2D()
 
     IEnumerator WaitSlashAnimation()
     {
