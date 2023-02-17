@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -7,22 +8,22 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D playerRigidbody = default;
     private SpriteRenderer spriteRenderer = default;
     private Animator playerAnimation = default;
-
-    private float playerSpeed = default;
-    private float playerJumpForce = default;
-
-    private bool isGrounded = false;
-    private bool isRunning = false;
-    private bool isJumpping = false;
+    private GameObject playerSlashEffectRight = default;
+    private GameObject playerSlashEffectLeft = default;
 
     private void Start()
     {
         playerRigidbody = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerAnimation = GetComponent<Animator>();
+        playerSlashEffectRight = GameObject.Find("Slash_Right");
+        playerSlashEffectLeft = GameObject.Find("Slash_Left");
 
-        playerSpeed = 5.0f;
-        playerJumpForce = 15.0f;
+        playerSlashEffectRight.SetActive(false);
+        playerSlashEffectLeft.SetActive(false);
+
+        GData.playerSpeed = 5.0f;
+        GData.playerJumpForce = 15.0f;
     }
 
     private void Update()
@@ -30,10 +31,12 @@ public class PlayerController : MonoBehaviour
         KeyControll();
         SpriteFlip();
         GravityScale();
+        SlashPosition();
 
         SetAnimatorParameters();
 
-
+        Debug.Log($"isRightSlash : {GData.isRightSlash}");
+        Debug.Log($"isLeftSlash : {GData.isLeftSlash}");
 
 
     }   //  Update()
@@ -42,16 +45,20 @@ public class PlayerController : MonoBehaviour
     {
         float x = Input.GetAxisRaw("Horizontal");
 
-        playerRigidbody.velocity = new Vector2(x * playerSpeed, playerRigidbody.velocity.y);
+        playerRigidbody.velocity = new Vector2(x * GData.playerSpeed, playerRigidbody.velocity.y);
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+        if (Input.GetKeyDown(KeyCode.Space) && GData.isGrounded == true)
         {
-            playerRigidbody.AddForce(Vector2.up * playerJumpForce, ForceMode2D.Impulse);
+            playerRigidbody.AddForce(Vector2.up * GData.playerJumpForce, ForceMode2D.Impulse);
         }
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-
+            GData.isAttacking = true;
+        }
+        else
+        {
+            GData.isAttacking = false;
         }
     }   //  KeyControll()
 
@@ -59,18 +66,18 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            spriteRenderer.flipX = true;
+            spriteRenderer.flipX = false;
         }
 
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            spriteRenderer.flipX = false;
+            spriteRenderer.flipX = true;
         }
     }   //  SpriteFlip()
 
     private void GravityScale()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+        if (Input.GetKeyDown(KeyCode.Space) && GData.isGrounded == true)
         {
             playerRigidbody.gravityScale = 3.0f;
         }
@@ -81,44 +88,100 @@ public class PlayerController : MonoBehaviour
         }
     }   //  GravityScale()
 
+    private void SlashPosition()
+    {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            GData.isLeftSlash = false;
+            GData.isRightSlash = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            GData.isRightSlash = false;
+            GData.isLeftSlash = true;
+        }
+    }   //  SlashPosition()
+
     private void SetAnimatorParameters()
     {
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
+        if ((Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow)) && GData.isGrounded == true)
         {
-            isRunning = true;
-            playerAnimation.SetBool("Run", isRunning);
+            GData.isRunning = true;
+            playerAnimation.SetBool("Run", GData.isRunning);
         }
         else
         {
-            isRunning = false;
-            playerAnimation.SetBool("Run", isRunning);
+            GData.isRunning = false;
+            playerAnimation.SetBool("Run", GData.isRunning);
         }
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded == true)
+        if (Input.GetKey(KeyCode.Space) && GData.isGrounded == false)
         {
-            isJumpping = true;
-            playerAnimation.SetBool("Jump", isJumpping);
+            GData.isJumping = true;
+            playerAnimation.SetBool("Jump", GData.isJumping);
+        }
+        else
+        {
+            if (GData.isGrounded == true)
+            {
+                GData.isJumping = false;
+                playerAnimation.SetBool("Jump", GData.isJumping);
+            }
         }
 
-        if (Input.GetKeyUp(KeyCode.Space))
+        if (GData.isAttacking == true)
         {
-            isJumpping = false;
-            playerAnimation.SetBool("Jump", isJumpping);
+            if (GData.isRightSlash == true)
+            {
+                playerAnimation.SetTrigger("Slash_Right");
+            }
+            if (GData.isLeftSlash == true)
+            {
+                playerAnimation.SetTrigger("Slash_Left");
+            }
+
+            StartCoroutine("WaitSlashAnimation");
+        }
+        else
+        {
+            if (GData.isRightSlash == true)
+            {
+                playerAnimation.ResetTrigger("Slash_Right");
+            }
+            if (GData.isLeftSlash == true)
+            {
+                playerAnimation.ResetTrigger("Slash_Left");
+            }
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            playerAnimation.SetTrigger("Slash");
-        }
     }   //  SetAnimatorParameters()
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        isGrounded = true;
+        GData.isGrounded = true;
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        isGrounded = false;
+        GData.isGrounded = false;
     }
+
+    IEnumerator WaitSlashAnimation()
+    {
+        if (GData.isRightSlash == true)
+        {
+            yield return new WaitForSeconds(0.1f);
+            playerSlashEffectRight.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+            playerSlashEffectRight.SetActive(false);
+        }
+        if (GData.isLeftSlash == true)
+        {
+            yield return new WaitForSeconds(0.1f);
+            playerSlashEffectLeft.SetActive(true);
+            yield return new WaitForSeconds(0.1f);
+            playerSlashEffectLeft.SetActive(false);
+        }
+    }   //  WaitSlashAnimation()
 }
