@@ -55,10 +55,12 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X))
         {
             GData.isAttacking = true;
+            playerAnimation.SetTrigger("Slash");
         }
         else
         {
             GData.isAttacking = false;
+            playerAnimation.SetBool("Slash", GData.isAttacking);
         }
     }   //  KeyControll()
 

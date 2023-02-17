@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Hollow Knight/01.Scene/01.TitleScene(MainMenu).unity
     guid: cba958492ee763a469b00910f675b3bb
   - enabled: 1
-    path: Assets/Hollow Knight/01.Scene/02.PlayScene.unity
+    path: Assets/Hollow Knight/01.Scene/00.Test.unity
     guid: 4d5b970ccb47dd3428e9ea5d9b04093e
   m_configObjects: {}
