@@ -24,6 +24,8 @@ public class PlayerController : MonoBehaviour
 
         GData.playerSpeed = 5.0f;
         GData.playerJumpForce = 15.0f;
+        GData.lastAttackTime = 0f;
+        GData.attackDelay = 0.1f;
     }
 
     private void Update()
@@ -31,38 +33,46 @@ public class PlayerController : MonoBehaviour
         KeyControll();
         SpriteFlip();
         GravityScale();
-        SlashPosition();
+        SlashPositioning();
 
         SetAnimatorParameters();
 
-        Debug.Log($"isRightSlash : {GData.isRightSlash}");
-        Debug.Log($"isLeftSlash : {GData.isLeftSlash}");
+        if (GData.isAttacking == true)
+        {
+        Debug.Log($"isAttack : {GData.isAttacking}");
 
+        }
 
     }   //  Update()
 
     private void KeyControll()
     {
-        float x = Input.GetAxisRaw("Horizontal");
+        GData.moveInput = Input.GetAxisRaw("Horizontal");
 
-        playerRigidbody.velocity = new Vector2(x * GData.playerSpeed, playerRigidbody.velocity.y);
+        playerRigidbody.velocity = new Vector2(GData.moveInput * GData.playerSpeed, playerRigidbody.velocity.y);
 
         if (Input.GetKeyDown(KeyCode.Space) && GData.isGrounded == true)
         {
-            playerRigidbody.AddForce(Vector2.up * GData.playerJumpForce, ForceMode2D.Impulse);
+            playerRigidbody.velocity = new Vector2(playerRigidbody.velocity.x, GData.playerJumpForce);
         }
 
-        if (Input.GetKeyDown(KeyCode.X))
+        AttackDelay();
+
+        if (Input.GetKeyDown(KeyCode.X) && Time.time - GData.lastAttackTime >= GData.attackDelay)
         {
             GData.isAttacking = true;
-            playerAnimation.SetTrigger("Slash");
-        }
-        else
-        {
-            GData.isAttacking = false;
-            playerAnimation.SetBool("Slash", GData.isAttacking);
+            GData.lastAttackTime = Time.time;
         }
     }   //  KeyControll()
+
+    private void AttackDelay()
+    {
+        if (Time.time - GData.lastAttackTime >= GData.attackDelay && GData.isAttacking == true)
+        {
+            GData.lastAttackTime = Time.time;
+            GData.isAttacking = false;
+        }
+    }
 
     private void SpriteFlip()
     {
@@ -86,11 +96,11 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            playerRigidbody.gravityScale = 8.0f;
+            playerRigidbody.gravityScale = 10.0f;
         }
     }   //  GravityScale()
 
-    private void SlashPosition()
+    private void SlashPositioning()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
@@ -130,6 +140,15 @@ public class PlayerController : MonoBehaviour
                 GData.isJumping = false;
                 playerAnimation.SetBool("Jump", GData.isJumping);
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            playerAnimation.SetTrigger("Slash");
+        }
+        else
+        {
+            playerAnimation.SetBool("Slash", GData.isAttacking);
         }
 
         if (GData.isAttacking == true)
