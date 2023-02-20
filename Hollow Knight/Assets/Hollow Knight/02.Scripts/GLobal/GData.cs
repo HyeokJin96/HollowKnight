@@ -17,6 +17,8 @@ public static partial class GData
     public static bool isRunning = false;
     public static bool isRightSlash = false;
     public static bool isLeftSlash = false;
+    public static bool isDownSlash = false;
+    public static bool isUpSlash = false;
     public static bool isJumping = false;
     public static bool isAttacking = false;
 
