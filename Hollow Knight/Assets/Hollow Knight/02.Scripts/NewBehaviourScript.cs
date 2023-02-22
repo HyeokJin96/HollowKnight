@@ -10,6 +10,6 @@ public class NewBehaviourScript : MonoBehaviour
 
     private void Update()
     {
-        transform.position = new Vector3(target.position.x, 0f, transform.position.z);
+        transform.position = new Vector3(target.position.x, target.position.y + 2f, transform.position.z);
     }
 }

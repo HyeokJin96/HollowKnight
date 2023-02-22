@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour
 
         playerSlashEffectRight.SetActive(false);
         playerSlashEffectLeft.SetActive(false);
-        playerSlashEffectDown.SetActive(false);
 
         GData.playerSpeed = 5.0f;
         GData.playerJumpForce = 15.0f;
