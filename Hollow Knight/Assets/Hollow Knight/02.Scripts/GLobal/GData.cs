@@ -13,6 +13,11 @@ public static partial class GData
     public static float attackDelay = default;
     public static float lastAttackTime = default;
 
+    public static float playerHp = default;
+    public static float objectHp = default;
+    public static float playerSlashDamage = default;
+    public static float OldNailDamage = default;
+
     public static bool isGrounded = false;
     public static bool isRunning = false;
     public static bool isRightSlash = false;
@@ -21,5 +26,6 @@ public static partial class GData
     public static bool isUpSlash = false;
     public static bool isJumping = false;
     public static bool isAttacking = false;
+
 
 }

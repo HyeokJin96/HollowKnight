@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using TMPro;
 using UnityEngine;
 
@@ -30,6 +31,9 @@ public class PlayerController : MonoBehaviour
         GData.playerJumpForce = 15.0f;
         GData.lastAttackTime = 0f;
         GData.attackDelay = 0.1f;
+
+        GData.playerSlashDamage = 0f;
+        GData.OldNailDamage = 5f;
     }   //  Start()
     #endregion
 
@@ -41,6 +45,8 @@ public class PlayerController : MonoBehaviour
         GravityScale();
         SlashPositioning();
         AnimationControll();
+
+        PlayerSlashDamage();
     }   //  Update()
     #endregion
 
@@ -219,6 +225,14 @@ public class PlayerController : MonoBehaviour
     }   //  OnCollisionExit2D()
     #endregion
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "Slash")
+        {
+
+        }
+    }
+
     IEnumerator WaitSlashAnimation()
     {
         if (GData.isAttacking == true && GData.isRightSlash == true)
@@ -247,4 +261,9 @@ public class PlayerController : MonoBehaviour
 
         }
     }   //  WaitSlashAnimation()
+
+    private void PlayerSlashDamage()
+    {
+        GData.playerSlashDamage = GData.OldNailDamage;
+    }
 }

@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wall
+  - Slash
+  - Area
   layers:
   - Default
   - TransparentFX
