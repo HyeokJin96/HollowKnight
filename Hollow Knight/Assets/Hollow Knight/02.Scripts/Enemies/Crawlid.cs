@@ -7,16 +7,12 @@ public class Crawlid : MonoBehaviour
     private Rigidbody2D crawlidRigidbody = default;
 
     private float moveSpeed = default;
-    private float jumpForce = default;
     private float crawlidHp = default;
 
     private bool isLeftWay = false;
     private bool canMove = false;
-    private bool isHitted = false;
-    private bool isDead = false;
 
-
-
+    #region Start
     private void Start()
     {
         crawlidRigidbody = GetComponent<Rigidbody2D>();
@@ -24,10 +20,11 @@ public class Crawlid : MonoBehaviour
         canMove = true;
 
         moveSpeed = 2f;
-        jumpForce = 2f;
         crawlidHp = 8f;
-    }
+    }   //  Start()
+    #endregion
 
+    #region Update
     private void Update()
     {
         Debug.Log($"crawlidHp : {crawlidHp}");
@@ -35,8 +32,10 @@ public class Crawlid : MonoBehaviour
         Movement();
         UpdateDirection();
         Die();
-    }
+    }   //  Update()
+    #endregion
 
+    #region UpdateDirection
     private void UpdateDirection()
     {
         if (transform.lossyScale.x == 1)
@@ -47,23 +46,19 @@ public class Crawlid : MonoBehaviour
         {
             isLeftWay = false;
         }
-    }
+    }   //  UpdateDirection()
+    #endregion
 
+    #region Flip
     private void Flip()
     {
         Vector3 vector = transform.localScale;
         vector.x *= (-1);
         transform.localScale = vector;
-    }
+    }   //  Flip()
+    #endregion
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.tag == "Area")
-        {
-            Flip();
-        }
-    }
-
+    #region Movement
     private void Movement()
     {
         if (canMove == true)
@@ -81,32 +76,38 @@ public class Crawlid : MonoBehaviour
         {
             crawlidRigidbody.velocity = Vector2.zero;
         }
-    }
+    }   //  Movement()
+    #endregion
 
-    private void Die()
+    #region OnTriggerExit2D
+    private void OnTriggerExit2D(Collider2D collision)
     {
-        if (crawlidHp <= 0)
+        if (collision.CompareTag("Area"))
         {
-            isDead = true;
-            canMove = false;
+            Flip();
         }
-    }
+    }   //  OnTriggerExit2D()
+    #endregion
 
+    #region OnTriggerEnter2D
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Slash")
+        if (collision.CompareTag("Slash"))
         {
             isHitted = true;
 
             crawlidHp -= GData.playerSlashDamage;
         }
-    }
+    }   //  OnTriggerEnter2D()
+    #endregion
 
-    private void Hitted()
+    #region Die
+    private void Die()
     {
-        if (isHitted == true)
+        if (crawlidHp <= 0)
         {
-            //crawlidRigidbody.velocity = new Vector2(0f, jumpForce);
+            canMove = false;
         }
-    }
+    }   //  Die()
+    #endregion
 }
