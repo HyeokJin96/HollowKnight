@@ -27,8 +27,6 @@ public class Crawlid : MonoBehaviour
     #region Update
     private void Update()
     {
-        Debug.Log($"crawlidHp : {crawlidHp}");
-
         Movement();
         UpdateDirection();
         Die();
@@ -94,8 +92,6 @@ public class Crawlid : MonoBehaviour
     {
         if (collision.CompareTag("Slash"))
         {
-            isHitted = true;
-
             crawlidHp -= GData.playerSlashDamage;
         }
     }   //  OnTriggerEnter2D()
