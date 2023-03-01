@@ -103,6 +103,7 @@ public class Crawlid : MonoBehaviour
         if (crawlidHp <= 0)
         {
             canMove = false;
+            gameObject.SetActive(false);
         }
     }   //  Die()
     #endregion
