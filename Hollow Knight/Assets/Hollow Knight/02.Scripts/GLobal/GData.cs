@@ -4,7 +4,9 @@ using UnityEngine;
 
 public static partial class GData
 {
+    public const string SCENE_NAME_PROLOUGE = "Prolouge";
     public const string SCENE_NAME_TITLE = "01.TitleScene(MainMenu)";
+    public const string SCENE_NAME_INTRO = "Intro";
     public const string SCENE_NAME_LEVEL01 = "Level01";
     public const string SCENE_NAME_LEVEL02 = "Level02";
 
